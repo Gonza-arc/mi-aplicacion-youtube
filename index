@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador de recetas desde YouTube</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6; /* Gris claro de fondo */
+            color: #333; /* Color de texto principal */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff; /* Fondo blanco para el contenedor */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #2c3e50; /* Color azul oscuro para el título */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #3498db; /* Color de borde al enfocar */
+            outline: none;
+        }
+        button {
+            background-color: #3498db; /* Color azul para el botón */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            position: relative;
+            overflow: hidden; /* Para el efecto de ondas */
+        }
+        button:hover {
+            background-color: #2980b9; /* Color azul más oscuro al pasar el ratón */
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        textarea {
+            width: calc(100% - 22px);
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            resize: vertical;
+            font-size: 16px;
+            min-height: 150px; /* Altura mínima del textarea */
+            background-color: #f9f9f9; /* Fondo ligeramente más claro para el textarea */
+            color: #333;
+        }
+        .error-message {
+            color: #e74c3c; /* Color rojo para el error */
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .success-message {
+            color: #2ecc71; /* Color verde para el éxito */
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Creador de recetas desde YouTube</h1>
+
+        <label for="youtubeLink">Introduce el enlace de YouTube:</label>
+        <input type="text" id="youtubeLink" placeholder="https://www.youtube.com/watch?v=xxxxxxxxxxx">
+
+        <button onclick="enviarEnlace()" id="procesarBtn">
+            Procesar
+            <div class="spinner" id="spinner"></div>
+        </button>
+
+        <textarea id="respuestaTexto" placeholder="La respuesta aparecerá aquí" readonly></textarea>
+
+        <div id="mensajeError" class="error-message" style="display: none;"></div>
+        <div id="mensajeExito" class="success-message" style="display: none;"></div>
+    </div>
+
+    <script>
+        const webhookUrl = "https://hook.eu1.make.com/hku9qxe3ep8hev8ubg3tf31nc1e6j7np";
+        const respuestaTexto = document.getElementById("respuestaTexto");
+        const mensajeError = document.getElementById("mensajeError");
+        const mensajeExito = document.getElementById("mensajeExito");
+        const procesarBtn = document.getElementById("procesarBtn");
+        const spinner = document.getElementById("spinner");
+
+        function enviarEnlace() {
+            const enlace = document.getElementById("youtubeLink").value;
+
+            mensajeError.style.display = 'none';
+            mensajeExito.style.display = 'none';
+            respuestaTexto.value = "";
+
+            if (!enlace) {
+                mensajeError.textContent = "Por favor, introduce un enlace de YouTube.";
+                mensajeError.style.display = 'block';
+                return;
+            }
+
+            if (!enlace.includes("youtube.com") && !enlace.includes("youtu.be")) {
+                mensajeError.textContent = "El enlace introducido no parece ser un enlace de YouTube válido.";
+                mensajeError.style.display = 'block';
+                return;
+            }
+
+            spinner.style.display = 'block';
+            procesarBtn.disabled = true;
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ enlaceYouTube: enlace })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log('Respuesta del webhook:', data);
+                respuestaTexto.value = data;
+                mensajeExito.textContent = "Procesado correctamente.";
+                mensajeExito.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error al enviar al webhook:', error);
+                mensajeError.textContent = `Error al conectar con el servidor: ${error.message}`;
+                mensajeError.style.display = 'block';
+            })
+            .finally(() => {
+                spinner.style.display = 'none';
+                procesarBtn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
