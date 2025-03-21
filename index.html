@@ -4,155 +4,365 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creador de recetas desde YouTube</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6; /* Gris claro de fondo */
-            color: #333; /* Color de texto principal */
+        :root {
+            --primary: #4361ee;
+            --primary-hover: #3a56d4;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --text: #333;
+            --text-light: #666;
+            --background: #f8f9fa;
+            --card: #ffffff;
+            --border: #e1e4e8;
+            --radius: 12px;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding: 20px;
         }
+
         .container {
-            background-color: #fff; /* Fondo blanco para el contenedor */
+            width: 100%;
+            max-width: 750px;
+            background-color: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .header {
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 600px;
-        }
-        h1 {
-            color: #2c3e50; /* Color azul oscuro para el título */
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
             text-align: center;
-            margin-bottom: 20px;
+            position: relative;
         }
+
+        .header-image {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-image svg {
+            width: 80px;  /* Reducido de 120px a 80px */
+            height: 80px; /* Reducido de 120px a 80px */
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 15px;
         }
-        input[type="text"] {
-            width: calc(100% - 22px);
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-        input[type="text"]:focus {
-            border-color: #3498db; /* Color de borde al enfocar */
-            outline: none;
-        }
-        button {
-            background-color: #3498db; /* Color azul para el botón */
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+
+        .input-group {
             position: relative;
-            overflow: hidden; /* Para el efecto de ondas */
+            display: flex;
+            align-items: center;
         }
+
+        .input-group input {
+            flex: 1;
+            padding: 14px 14px 14px 45px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: #f9fafb;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            background-color: white;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            color: #9ba3af;
+            font-size: 18px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: var(--radius);
+            background-color: var(--primary);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
         button:hover {
-            background-color: #2980b9; /* Color azul más oscuro al pasar el ratón */
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
         }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .spinner {
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-top: 3px solid white;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
             animation: spin 0.8s linear infinite;
             display: none;
         }
+
         @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        textarea {
-            width: calc(100% - 22px);
-            padding: 15px;
-            margin-top: 15px;
-            border: 1px solid #ccc;
+
+        .result-container {
+            margin-top: 25px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .result-header h3 {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
             border-radius: 4px;
-            box-sizing: border-box;
+            transition: var(--transition);
+            width: auto;
+            display: none;
+        }
+
+        .copy-btn:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            transform: none;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 15px;
+            line-height: 1.6;
             resize: vertical;
-            font-size: 16px;
-            min-height: 150px; /* Altura mínima del textarea */
-            background-color: #f9f9f9; /* Fondo ligeramente más claro para el textarea */
-            color: #333;
+            margin-bottom: 15px;
+            transition: var(--transition);
+            background-color: #f9fafb;
         }
+
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            background-color: white;
+        }
+
+        .message {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            display: none;
+        }
+
         .error-message {
-            color: #e74c3c; /* Color rojo para el error */
-            margin-top: 10px;
-            font-size: 0.9em;
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--error);
         }
+
         .success-message {
-            color: #2ecc71; /* Color verde para el éxito */
-            margin-top: 10px;
-            font-size: 0.9em;
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--success);
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header-image svg {
+                width: 60px;
+                height: 60px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Creador de recetas desde YouTube</h1>
+        <div class="header">
+            <div class="header-image">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="white">
+                    <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 464c-114.7 0-208-93.31-208-208S141.3 48 256 48s208 93.31 208 208S370.7 464 256 464zM256 336c-18 0-32 14-32 32s13.1 32 32 32c17.1 0 32-14 32-32S273.1 336 256 336zM289.1 128h-51.1C199 128 168 159 168 198c0 13 11 24 23.1 24s23.1-10.99 23.1-23.99C215.1 186 225.1 176 237.1 176h51.1C301.1 176 312 186 312 198c0 8-4 14.1-11 18.1L244 251C236 256 232 264 232 272V288c0 13 11 24 23.1 24S280 301 280 288V286l45.1-28c21-13 34-36 34-60C360 159 329 128 289.1 128z" opacity="0.85"/>
+                    <path d="M368 352h-16c-8.8 0-16 7.2-16 16s7.2 16 16 16h16c8.8 0 16-7.2 16-16S376.8 352 368 352z" opacity="0.6"/>
+                    <path d="M288 128h-16c-4.4 0-8 3.6-8 8s3.6 8 8 8h16c4.4 0 8-3.6 8-8S292.4 128 288 128z" opacity="0.4"/>
+                    <path d="M400 96c-17.7 0-32 14.3-32 32s14.3 32 32 32s32-14.3 32-32S417.7 96 400 96z" opacity="0.6"/>
+                    <path d="M64 256c0-17.7-14.3-32-32-32s0 64 0 64S64 273.7 64 256z" opacity="0.3"/>
+                    <g opacity="0.9">
+                        <path d="M344 96c0 4.4-3.6 8-8 8H176c-4.4 0-8-3.6-8-8s3.6-8 8-8h160C340.4 88 344 91.6 344 96z" opacity="0.5"/>
+                        <path d="M416 152c-4.4 0-8 3.6-8 8s3.6 8 8 8h16c4.4 0 8-3.6 8-8s-3.6-8-8-8H416z" opacity="0.5"/>
+                        <path d="M432 208c0 4.4-3.6 8-8 8H408c-4.4 0-8-3.6-8-8s3.6-8 8-8h16C428.4 200 432 203.6 432 208z" opacity="0.5"/>
+                        <path d="M80 304c0-4.4 3.6-8 8-8h16c4.4 0 8 3.6 8 8s-3.6 8-8 8H88C83.6 312 80 308.4 80 304z" opacity="0.5"/>
+                        <path d="M112 352c0 4.4-3.6 8-8 8H88c-4.4 0-8-3.6-8-8s3.6-8 8-8h16C108.4 344 112 347.6 112 352z" opacity="0.5"/>
+                    </g>
+                </svg>
+            </div>
+            <h1>Creador de recetas desde YouTube</h1>
+            <p>Transforma videos culinarios en recetas estructuradas</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-group">
+                <label for="youtubeLink">Enlace del video de YouTube</label>
+                <div class="input-group">
+                    <i class="fab fa-youtube input-icon"></i>
+                    <input type="text" id="youtubeLink" placeholder="https://www.youtube.com/watch?v=xxxxxxxxxxx">
+                </div>
+            </div>
 
-        <label for="youtubeLink">Introduce el enlace de YouTube:</label>
-        <input type="text" id="youtubeLink" placeholder="https://www.youtube.com/watch?v=xxxxxxxxxxx">
+            <button onclick="enviarEnlace()" id="procesarBtn">
+                <i class="fas fa-magic"></i>
+                <span>Generar receta</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
 
-        <button onclick="enviarEnlace()" id="procesarBtn">
-            Procesar
-            <div class="spinner" id="spinner"></div>
-        </button>
+            <div id="mensajeError" class="message error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="textoError"></span>
+            </div>
+            
+            <div id="mensajeExito" class="message success-message">
+                <i class="fas fa-check-circle"></i>
+                <span id="textoExito"></span>
+            </div>
 
-        <textarea id="respuestaTexto" placeholder="La respuesta aparecerá aquí" readonly></textarea>
-
-        <div id="mensajeError" class="error-message" style="display: none;"></div>
-        <div id="mensajeExito" class="success-message" style="display: none;"></div>
+            <div class="result-container">
+                <div class="result-header">
+                    <h3>Receta generada</h3>
+                    <button id="copyBtn" class="copy-btn">
+                        <i class="far fa-copy"></i> Copiar al portapapeles
+                    </button>
+                </div>
+                <textarea id="respuestaTexto" placeholder="La receta aparecerá aquí..." readonly></textarea>
+            </div>
+        </div>
     </div>
 
     <script>
         const webhookUrl = "https://hook.eu1.make.com/hku9qxe3ep8hev8ubg3tf31nc1e6j7np";
         const respuestaTexto = document.getElementById("respuestaTexto");
         const mensajeError = document.getElementById("mensajeError");
+        const textoError = document.getElementById("textoError");
         const mensajeExito = document.getElementById("mensajeExito");
+        const textoExito = document.getElementById("textoExito");
         const procesarBtn = document.getElementById("procesarBtn");
         const spinner = document.getElementById("spinner");
+        const copyBtn = document.getElementById("copyBtn");
 
         function enviarEnlace() {
-            const enlace = document.getElementById("youtubeLink").value;
+            const enlace = document.getElementById("youtubeLink").value.trim();
 
+            // Reiniciar estados
             mensajeError.style.display = 'none';
             mensajeExito.style.display = 'none';
+            copyBtn.style.display = 'none';
             respuestaTexto.value = "";
 
             if (!enlace) {
-                mensajeError.textContent = "Por favor, introduce un enlace de YouTube.";
-                mensajeError.style.display = 'block';
+                textoError.textContent = "Por favor, introduce un enlace de YouTube.";
+                mensajeError.style.display = 'flex';
                 return;
             }
 
             if (!enlace.includes("youtube.com") && !enlace.includes("youtu.be")) {
-                mensajeError.textContent = "El enlace introducido no parece ser un enlace de YouTube válido.";
-                mensajeError.style.display = 'block';
+                textoError.textContent = "El enlace introducido no parece ser un enlace de YouTube válido.";
+                mensajeError.style.display = 'flex';
                 return;
             }
 
+            // Mostrar estado de carga
             spinner.style.display = 'block';
             procesarBtn.disabled = true;
+            procesarBtn.querySelector('span').textContent = "Procesando...";
 
             fetch(webhookUrl, {
                 method: 'POST',
@@ -163,26 +373,48 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`Error del servidor: ${response.status}`);
                 }
                 return response.text();
             })
             .then(data => {
                 console.log('Respuesta del webhook:', data);
                 respuestaTexto.value = data;
-                mensajeExito.textContent = "Procesado correctamente.";
-                mensajeExito.style.display = 'block';
+                textoExito.textContent = "¡Receta generada correctamente!";
+                mensajeExito.style.display = 'flex';
+                copyBtn.style.display = 'block';
             })
             .catch(error => {
                 console.error('Error al enviar al webhook:', error);
-                mensajeError.textContent = `Error al conectar con el servidor: ${error.message}`;
-                mensajeError.style.display = 'block';
+                textoError.textContent = `Error: ${error.message}. Por favor, intenta de nuevo más tarde.`;
+                mensajeError.style.display = 'flex';
             })
             .finally(() => {
                 spinner.style.display = 'none';
                 procesarBtn.disabled = false;
+                procesarBtn.querySelector('span').textContent = "Generar receta";
             });
         }
+
+        // Funcionalidad para copiar al portapapeles
+        copyBtn.addEventListener('click', () => {
+            respuestaTexto.select();
+            document.execCommand('copy');
+            
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
+        });
+
+        // Verificar si el campo tiene contenido al cargar la página
+        window.addEventListener('load', () => {
+            if (respuestaTexto.value.trim() !== '') {
+                copyBtn.style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>
